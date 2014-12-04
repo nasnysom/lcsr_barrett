@@ -8,12 +8,21 @@
   <arg name="ee_bumblebee" default="false" doc="(bool) True if there is no end-effector"/>
 
   <group ns="$(arg oro_prefix)inverse_dynamics">
+    <!-- <rosparam subst_value="true"> -->
+    <!--   robot_description_param: /robot_description -->
+    <!--   root_link: $(arg tf_prefix)/base_link -->
+    <!--   end_effector_frame_link: $(arg tf_prefix)/wrist_palm_link -->
+    <!--   gravity: [-9.8, 0.0, 0.0] -->
+    <!-- </rosparam> -->
+
     <rosparam subst_value="true">
       robot_description_param: /robot_description
       root_link: $(arg tf_prefix)/base_link
       end_effector_frame_link: $(arg tf_prefix)/wrist_palm_link
-      gravity: [-9.8, 0.0, 0.0]
+      gravity: [0.0, 0.0, -9.8]
     </rosparam>
+
+
     <rosparam if="$(arg ee_empty)" subst_value="true">
       tip_link: $(arg tf_prefix)/wrist_palm_link
     </rosparam>
