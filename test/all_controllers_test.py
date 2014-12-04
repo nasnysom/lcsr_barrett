@@ -11,6 +11,7 @@ from operator import add
 
 import controller_manager_msgs.msg
 import controller_manager_msgs.srv
+import oro_barrett_msgs.msg
 import trajectory_msgs.msg
 
 import tf
@@ -41,15 +42,13 @@ def main():
     rospy.loginfo("Listing controllers:")
     print list_controllers()
     
-    
-    
-
 
     # Enable joint control group
     switch_controllers(['joint_control',],['ik_control','cart_imp_control'],1)
     
     # commanding through control_msgs.msg.FollowJoingTrajectoryAction action client
     rospy.loginfo("commanding joint trajectories through control_msgs.msg.FollowJointTrajectoryAction action client")
+    
     
     traj_client = actionlib.SimpleActionClient(
             '/gazebo/traj_rml/action', control_msgs.msg.FollowJointTrajectoryAction)
@@ -99,6 +98,7 @@ def main():
         
         jointpoint.positions[3] = point_pi4.positions[3] + pi/3.0*sin(2.0*pi*0.25*t)
 
+
         jointpoint_pub.publish(jointpoint)
         r.sleep()
 
@@ -109,8 +109,6 @@ def main():
 
 
     rospy.loginfo("switching to jtns pose control")
-
-
 
     
 
@@ -132,17 +130,65 @@ def main():
     while True:
         t = rospy.get_time() - tstart
 
-
-        # if t>10.0:
-        #     break
+        if t>10.0:
+            break
         dp[0] = 0.5*sin(2.0*pi*0.25*t)
         dp[1] = 0.5*cos(2.0*pi*0.25*t)
         bc.sendTransform(map(add, trans, dp), rot, rospy.Time(0),"/wam/cmd", "/wam/base_link")
         r.sleep()
 
+    # hand position pid commands through topic publishing
+    hand_pub = rospy.Publisher('/gazebo/barrett_manager/hand/cmd', 
+                                              oro_barrett_msgs.msg.BHandCmd, 
+                                              queue_size=5)
+    handpos_cmd = oro_barrett_msgs.msg.BHandCmd()
+    handpos_cmd.mode = [handpos_cmd.MODE_PID]*4
+    handpos_cmd.cmd = [0.0]*4
+    
+
+    rospy.loginfo("commanding jtns poses and hand PID commands")
+    tstart = rospy.get_time()
+    while True:
+        t = rospy.get_time() - tstart
+        if t > 10.0:
+            break
+        dp[0] = 0.5*sin(2.0*pi*0.25*t)
+        dp[1] = 0.5*cos(2.0*pi*0.25*t)
+    
+        bc.sendTransform(map(add, trans, dp), rot, rospy.Time(0),"/wam/cmd", "/wam/base_link")
+        
+        handpos_cmd.cmd = map(add, 
+                              [pi/4.0, pi/4.0, pi/4.0, pi/4.0], 
+                              [pi/4.0 * sin( 2.0 * pi * 0.25 * t )]*4)
+        hand_pub.publish(handpos_cmd)
+        
+        r.sleep()
         
     
+    # hand velocity commands through topic publishing
+    handvel_cmd = oro_barrett_msgs.msg.BHandCmd()
+    handvel_cmd.mode = [handvel_cmd.MODE_VELOCITY]*4
+    handpos_cmd.cmd = [0.0]*4
+
+    rospy.loginfo("commanding jtns poses and hand velocity commands")
+    tstart = rospy.get_time()
+    while True:
+        t = rospy.get_time() - tstart
+        if t > 10.0:
+            break
+
+        dp[0] = 0.5*sin(2.0*pi*0.25*t)
+        dp[1] = 0.5*cos(2.0*pi*0.25*t)
     
+        bc.sendTransform(map(add, trans, dp), rot, rospy.Time(0),"/wam/cmd", "/wam/base_link")
+
+        handvel_cmd.cmd = [pi/4.0 * sin( 2.0 * pi * 0.25 * t )]*4
+        hand_pub.publish(handvel_cmd)
+        r.sleep()
+
+    # move-group testing
+        
+
     
 if __name__ == '__main__':
     main()
