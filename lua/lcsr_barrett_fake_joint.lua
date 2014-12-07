@@ -38,11 +38,11 @@ function lcsr_barrett_fake_joint(sim, prefix)
 
   --[[ Load barrett manager, wam --]]
   -- rtt.log("Loading barret...")
-  -- require("load_barrett")
-  -- manager, effort_sum = load_barrett(depl, scheme, prefix, sim)
+  -- require("load_barrett_fake_joint")
+  -- manager = load_barrett_fake_joint(depl, scheme, prefix, sim)
   -- if not manager then
-  --   rtt.logl("Error", "Failed to create barrett manager, is the WAM plugged in and is the CANBus properly configured?");
-  --   return false;
+  --    rtt.logl("Error", "Failed to create barrett manager, is the WAM plugged in and is the CANBus properly configured?");
+  --    return false;
   -- end
 
   --[[ Load controllers --]]

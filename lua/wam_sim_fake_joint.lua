@@ -11,7 +11,6 @@ rtt.setLogLevel("Warning")
 package.path = ros:find("lcsr_barrett") .. "/lua/?.lua" .. ";" .. package.path
 
 require("lcsr_barrett_fake_joint")
-print("running lcsr_barret_fake_joint.lua")
 lcsr_barrett_fake_joint(true)
 
 --[[ Start the WAM --]]
