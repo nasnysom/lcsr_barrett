@@ -28,7 +28,7 @@
   <arg name="j5" default="0.0" doc="(float) Joint 5 initial position"/>
   <arg name="j6" default="0.0" doc="(float) Joint 6 initial position"/>
 
-  <param name="use_sim_time" value="true"/>
+  <!-- <param name="use_sim_time" value="true"/> -->
 
   <!-- Gazebo -->
   <!-- <include file="$(find rtt_gazebo_examples)/test/empty_world.launch"> -->
@@ -44,11 +44,29 @@
 
   <!-- Load WAM URDF -->
   <param name="robot_description"
-    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/launch/sim/wam7_sim.urdf.xacro'
+    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/launch/sim/wam7_sim_fake_joint.urdf.xacro'
     prefix:=wam
-    lua_script:='$(find lcsr_barrett)/lua/wam_sim_fake_joint.lua'
     hand:=$(arg hand) ball:=$(arg ball)
     initial_group:=$(arg initial_group)" />
+
+
+  <!-- Run lua scripts to start orocos components -->
+  <!-- <node -->
+  <!--   name="fake_barrett" -->
+  <!--   pkg="rtt_ros" type="ldeployer" -->
+  <!--   args="$(find lcsr_barrett)/lua/wam_sim_fake_joint.lua" -->
+  <!--   output="screen"> -->
+  <!-- </node> -->
+
+
+  <include file="$(find rtt_ros)/launch/ldeployer.launch">
+    <arg name="NAME" value="fake_joint"/>
+    <arg name="DEPLOYER_ARGS" value="-g -s $(find lcsr_barrett)/lua/wam_sim_fake_joint.lua"/>
+    <arg name="LOG_LEVEL" value="$(arg log_level)"/>
+    <arg name="DEBUG" value="$(arg debug)"/>
+  </include>
+
+
 
   <!-- Spawn the robot in Gazebo -->
   <!-- <node name="$(anon urdf_spawner)" -->
