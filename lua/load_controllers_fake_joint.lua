@@ -58,20 +58,25 @@ function load_controllers_fake_joint(depl, scheme, prefix)
 
   --[[ Configure all components --]]
   traj_rml:configure();
-  traj_rml:start();
 
   --[[ Add to the conman scheme --]]
   scheme:addPeer(traj_rml);
 
+  scheme:latchInputs(traj_rml_name, true)
+  -- traj_rml:start()
+
+
   --[[ Add blocks to the scheme --]]
   scheme:addBlock(traj_rml_name);
 
+  
   --[[ Create joint control group --]]
   joint_control = prefix.."joint_control"
   scheme:addGroup(joint_control);
   
   scheme:addToGroup(traj_rml_name, joint_control);
-  scheme:latchInputs(traj_rml_name, true)
+
+
 
 end
 

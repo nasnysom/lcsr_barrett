@@ -5,13 +5,15 @@ ros = gs:provides("ros")
 ros:import("lcsr_barrett")
 
 --[ Set log-level ]--
+-- rtt.setLogLevel("Debug")
 rtt.setLogLevel("Warning")
+
 
 --[[ add lua dir to the lua path --]]
 package.path = ros:find("lcsr_barrett") .. "/lua/?.lua" .. ";" .. package.path
 
 require("lcsr_barrett_fake_joint")
-lcsr_barrett_fake_joint(true)
+lcsr_barrett_fake_joint()
 
 --[[ Start the WAM --]]
 -- barrett_manager:provides("wam"):initialize()
